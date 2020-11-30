@@ -1,7 +1,7 @@
 set(OPENALSOFT_PROJECT_DIR "${EXTERNAL_PROJECT_DIR}/openal-soft")
 set(OPENALSOFT_OUTPUT_DIR "${EXTERNAL_PROJECT_DIR}/lib/openal-soft/${KLAYGE_PLATFORM_NAME}")
 
-UpdateExternalLib("openal-soft" "https://github.com/kcat/openal-soft.git" "cee8100f1917ce21052b9cf255eeefdc839ae550" "" "" need_patch)
+UpdateExternalLib("openal-soft" "https://github.com/kcat/openal-soft.git" "c0cf323e1d56ce605e90927324d2fdafcfbb564a" "" "" need_patch)
 if(need_patch)
 	foreach(patch "0001-Fix-compiling-warnings-on-clang-cl")
 		ApplyPatch("openal-soft" "${CMAKE_CURRENT_SOURCE_DIR}/Patches/${patch}.patch")
@@ -113,6 +113,6 @@ if(NOT CMAKE_CROSSCOMPILING)
 endif()
 
 foreach(target
-	"build_version" "native-tools" "OpenAL")
+	"build_version" "common" "ex-common" "native-tools" "OpenAL")
 	set_target_properties(${target} PROPERTIES FOLDER "${EXTERNAL_VS_FOLDER_PREFIX}/openal-soft")
 endforeach()

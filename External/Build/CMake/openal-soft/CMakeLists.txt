@@ -1,7 +1,7 @@
 set(OPENALSOFT_PROJECT_DIR "${EXTERNAL_PROJECT_DIR}/openal-soft")
 set(OPENALSOFT_OUTPUT_DIR "${EXTERNAL_PROJECT_DIR}/lib/openal-soft/${KLAYGE_PLATFORM_NAME}")
 
-UpdateExternalLib("openal-soft" "https://github.com/kcat/openal-soft.git" "c0cf323e1d56ce605e90927324d2fdafcfbb564a" "" "" need_patch)
+UpdateExternalLib("openal-soft" "https://github.com/kcat/openal-soft.git" "f5e0eef34db3a3ab94b61a2f99f84f078ba947e7" "" "" need_patch)
 if(need_patch)
 	foreach(patch "0001-Fix-compiling-warnings-on-clang-cl")
 		ApplyPatch("openal-soft" "${CMAKE_CURRENT_SOURCE_DIR}/Patches/${patch}.patch")

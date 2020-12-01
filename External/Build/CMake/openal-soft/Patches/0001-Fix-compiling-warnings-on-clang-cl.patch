@@ -1,43 +1,42 @@
-From b65861e8785b9ebfd038fb3e1a0dd672c8c7be7a Mon Sep 17 00:00:00 2001
+From 7d0e0543ddcd869d5b4eab8ad8eed502f7e754e2 Mon Sep 17 00:00:00 2001
 From: Minmin Gong <gongminmin@msn.com>
-Date: Mon, 30 Nov 2020 22:09:00 -0800
+Date: Tue, 1 Dec 2020 00:48:49 -0800
 Subject: [PATCH] Fix compiling warnings on clang-cl
 
 ---
- alc/hrtf.cpp        |  4 ++--
- alc/panning.cpp     |  2 +-
- common/almalloc.cpp |  2 +-
- common/almalloc.h   | 12 ++++++------
- 4 files changed, 10 insertions(+), 10 deletions(-)
+ alc/hrtf.cpp        | 4 ++--
+ alc/panning.cpp     | 2 +-
+ common/almalloc.cpp | 2 +-
+ 3 files changed, 4 insertions(+), 4 deletions(-)
 
 diff --git a/alc/hrtf.cpp b/alc/hrtf.cpp
-index 8e416cf1..77ba2048 100644
+index 0b6eb434..329084d3 100644
 --- a/alc/hrtf.cpp
 +++ b/alc/hrtf.cpp
-@@ -1061,7 +1061,7 @@ std::unique_ptr<HrtfEntry> LoadHrtf02(std::istream &data, const char *filename)
-             azcnt_end = std::copy_backward(azcnt_src, azcnt_src+num_evs, azcnt_end);
-             return ebase + num_evs;
+@@ -963,7 +963,7 @@ std::unique_ptr<HrtfStore> LoadHrtf02(std::istream &data, const char *filename)
+             elevs__end = std::copy_backward(elevs_src, elevs_src+field.evCount, elevs__end);
+             return ebase + field.evCount;
          };
--        std::accumulate(evCount.cbegin(), evCount.cend(), ptrdiff_t{0}, copy_azs);
-+        (void)std::accumulate(evCount.cbegin(), evCount.cend(), ptrdiff_t{0}, copy_azs);
-         assert(azCount_.begin() == azcnt_end);
+-        std::accumulate(fields.cbegin(), fields.cend(), ptrdiff_t{0}, copy_azs);
++        (void)std::accumulate(fields.cbegin(), fields.cend(), ptrdiff_t{0}, copy_azs);
+         assert(elevs_.begin() == elevs__end);
  
          /* Reestablish the IR offset for each elevation index, given the new
-@@ -1086,7 +1086,7 @@ std::unique_ptr<HrtfEntry> LoadHrtf02(std::istream &data, const char *filename)
+@@ -998,7 +998,7 @@ std::unique_ptr<HrtfStore> LoadHrtf02(std::istream &data, const char *filename)
  
-             return ebase + num_evs;
+             return ebase + field.evCount;
          };
--        std::accumulate(evCount.cbegin(), evCount.cend(), ptrdiff_t{0}, copy_irs);
-+        (void)std::accumulate(evCount.cbegin(), evCount.cend(), ptrdiff_t{0}, copy_irs);
+-        std::accumulate(fields.cbegin(), fields.cend(), ptrdiff_t{0}, copy_irs);
++        (void)std::accumulate(fields.cbegin(), fields.cend(), ptrdiff_t{0}, copy_irs);
          assert(coeffs_.begin() == coeffs_end);
          assert(delays_.begin() == delays_end);
  
 diff --git a/alc/panning.cpp b/alc/panning.cpp
-index e85222bd..22464e2e 100644
+index 435555d2..a0fbcfc5 100644
 --- a/alc/panning.cpp
 +++ b/alc/panning.cpp
-@@ -838,7 +838,7 @@ void aluInitRenderer(ALCdevice *device, ALint hrtf_id, HrtfRequestMode hrtf_appr
-             device->HrtfName = entry.name;
+@@ -810,7 +810,7 @@ void aluInitRenderer(ALCdevice *device, ALint hrtf_id, HrtfRequestMode hrtf_appr
+             device->HrtfName = hrtfname;
              return true;
          };
 -        std::find_if(device->HrtfList.cbegin(), device->HrtfList.cend(), find_hrtf);
@@ -58,57 +57,6 @@ index 842fb400..7a369c30 100644
      size = (size+(alignment-1))&~(alignment-1);
      return aligned_alloc(alignment, size);
  #elif defined(HAVE_POSIX_MEMALIGN)
-diff --git a/common/almalloc.h b/common/almalloc.h
-index 15ec600d..b583d243 100644
---- a/common/almalloc.h
-+++ b/common/almalloc.h
-@@ -146,7 +146,7 @@ inline void uninitialized_default_construct(T first, const T last)
-         }
-     }
-     catch(...) {
--        destroy(first, current);
-+        al::destroy(first, current);
-         throw;
-     }
- }
-@@ -165,7 +165,7 @@ inline T uninitialized_default_construct_n(T first, N count)
-             } while(--count);
-         }
-         catch(...) {
--            destroy(first, current);
-+            al::destroy(first, current);
-             throw;
-         }
-     }
-@@ -187,7 +187,7 @@ inline T1 uninitialized_move(T0 first, const T0 last, const T1 output)
-         }
-     }
-     catch(...) {
--        destroy(output, current);
-+        al::destroy(output, current);
-         throw;
-     }
-     return current;
-@@ -208,7 +208,7 @@ inline T1 uninitialized_move_n(T0 first, N count, const T1 output)
-             } while(--count);
-         }
-         catch(...) {
--            destroy(output, current);
-+			al::destroy(output, current);
-             throw;
-         }
-     }
-@@ -265,8 +265,8 @@ DIAGNOSTIC_POP
-     }
- 
-     FlexArray(index_type size) : mSize{size}
--    { uninitialized_default_construct_n(mArray, mSize); }
--    ~FlexArray() { destroy_n(mArray, mSize); }
-+    { al::uninitialized_default_construct_n(mArray, mSize); }
-+    ~FlexArray() { al::destroy_n(mArray, mSize); }
- 
-     FlexArray(const FlexArray&) = delete;
-     FlexArray& operator=(const FlexArray&) = delete;
 -- 
 2.17.1.windows.2
 
